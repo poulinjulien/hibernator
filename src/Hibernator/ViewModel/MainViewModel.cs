@@ -8,26 +8,20 @@
 // <project>Hibernator</project>
 // ----------------------------------------------------------------------------
 
+
 namespace Hibernator.ViewModel
 {
 
   using System;
   using System.Collections.ObjectModel;
-  using System.Threading;
   using System.Windows.Forms;
   using System.Windows.Input;
   using GalaSoft.MvvmLight;
   using GalaSoft.MvvmLight.Command;
-  using Timer = System.Threading.Timer;
+  using Models;
 
   public class MainViewModel : ViewModelBase
   {
-
-    private const int TimerInterval = 100;
-
-    private readonly Timer _Timer;
-
-    private DateTime? _HibernateTime;
 
     /// <summary>
     /// Initializes a new instance of the MainViewModel class.
@@ -51,34 +45,36 @@ namespace Hibernator.ViewModel
       PowerStates.Add(PowerState.Hibernate);
       PowerStates.Add(PowerState.Suspend);
       SelectedPowerState = PowerState.Hibernate;
-      _Timer = new Timer(_ => TimerCallback(), null, Timeout.Infinite, Timeout.Infinite);
     }
 
-    private void TimerCallback()
+    private CountdownTimer _CountdownTimer;
+
+    public CountdownTimer CountdownTimer
     {
-      if (_HibernateTime.HasValue)
+      get { return _CountdownTimer; }
+      set
       {
-        var now = DateTime.Now;
-        RemainingTime = _HibernateTime.Value - now;
-        if (now > _HibernateTime)
+        if (_CountdownTimer != value)
         {
-          Hibernate();
+          if (_CountdownTimer != null)
+          {
+            _CountdownTimer.CountdownComplete -= CountdownTimer_CountdownComplete;
+          }
+
+          _CountdownTimer = value;
+
+          if (_CountdownTimer != null)
+          {
+            _CountdownTimer.CountdownComplete += CountdownTimer_CountdownComplete;
+          }
+
+          RaisePropertyChanged(() => CountdownTimer);
         }
       }
     }
 
-    private void StopTimer()
-    {
-      _Timer.Change(Timeout.Infinite, Timeout.Infinite);
-    }
-
-    private void StartTimer()
-    {
-      _Timer.Change(TimerInterval, TimerInterval);
-    }
-
     private bool _IsHibernating;
-    
+
     public bool IsHibernating
     {
       get { return _IsHibernating; }
@@ -89,17 +85,9 @@ namespace Hibernator.ViewModel
       }
     }
 
-    private void Hibernate()
-    {
-      IsHibernating = true;
-      StopTimer();
-      _StartCommand.RaiseCanExecuteChanged();
-      _StopCommand.RaiseCanExecuteChanged();
-      Application.SetSuspendState(SelectedPowerState, true, true);
-    }
-
     public ObservableCollection<PowerState> PowerStates { get; set; }
 
+    private PowerState _SelectedPowerState;
     public PowerState SelectedPowerState
     {
       get { return _SelectedPowerState; }
@@ -121,31 +109,6 @@ namespace Hibernator.ViewModel
       {
         _SelectedTimerDuration = value;
         RaisePropertyChanged(() => SelectedTimerDuration);
-        RemainingTime = _SelectedTimerDuration;
-      }
-    }
-
-    private TimeSpan _RemainingTime;
-
-    public TimeSpan RemainingTime
-    {
-      get { return _RemainingTime; }
-      set
-      {
-        _RemainingTime = value;
-        RaisePropertyChanged(() => RemainingTime);
-      }
-    }
-
-    private bool _IsTimerStarted;
-
-    public bool IsTimerStarted
-    {
-      get { return _IsTimerStarted; }
-      set
-      {
-        _IsTimerStarted = value;
-        RaisePropertyChanged(() => IsTimerStarted);
       }
     }
 
@@ -160,18 +123,24 @@ namespace Hibernator.ViewModel
 
     private bool CanStart()
     {
-      return !IsTimerStarted && !IsHibernating;
+      return CountdownTimer == null || (!CountdownTimer.IsRunning && !IsHibernating);
     }
 
     private void Start()
     {
-      _HibernateTime = DateTime.Now.Add(SelectedTimerDuration);
-      StartTimer();
-      IsTimerStarted = true;
+      CountdownTimer = new CountdownTimer(SelectedTimerDuration);
+      CountdownTimer.Start();
+    }
+
+    private void CountdownTimer_CountdownComplete(object sender, EventArgs e)
+    {
+      IsHibernating = true;
+      _StartCommand.RaiseCanExecuteChanged();
+      _StopCommand.RaiseCanExecuteChanged();
+      Application.SetSuspendState(SelectedPowerState, true, true);
     }
 
     private RelayCommand _StopCommand;
-    private PowerState _SelectedPowerState;
 
     public ICommand StopCommand
     {
@@ -180,18 +149,16 @@ namespace Hibernator.ViewModel
 
     private bool CanStop()
     {
-      return IsTimerStarted && ! IsHibernating;
+      return CountdownTimer != null && (CountdownTimer.IsRunning && !IsHibernating);
     }
 
     private void Stop()
     {
-      _HibernateTime = null;
-      RemainingTime = SelectedTimerDuration;
-      StopTimer();
-      IsTimerStarted = false;
+      CountdownTimer.Stop();
     }
 
     #endregion
+
   }
 
 }

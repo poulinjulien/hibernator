@@ -11,13 +11,13 @@
     <tb:TaskbarIcon IconSource="/Icon.ico" 
                     DoubleClickCommand="{Binding RestoreWindowCommand, RelativeSource={RelativeSource AncestorType=Window}}"  />
     <StackPanel Margin="10">
-      <TextBlock  FontSize="32" Text="{Binding RemainingTime, StringFormat={}{0:hh\\:mm\\:ss}, FallbackValue=--\\:--}" 
+      <TextBlock  FontSize="32" Text="{Binding CountdownTimer.Remaining, StringFormat={}{0:hh\\:mm\\:ss}, FallbackValue=--\:--}" 
                   HorizontalAlignment="Center" FontWeight="Bold" Margin="0,0,0,10" />
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
-        <ComboBox ItemsSource="{Binding PowerStates}" VerticalAlignment="Center" IsEnabled="{Binding IsTimerStarted, Converter={converters:BooleanInverser}}"
+        <ComboBox ItemsSource="{Binding PowerStates}" VerticalAlignment="Center" IsEnabled="{Binding CountdownTimer.IsRunning, Converter={converters:BooleanInverser}}"
                   SelectedItem="{Binding SelectedPowerState}" />
         <Label VerticalAlignment="Center">in</Label>
-        <ComboBox ItemsSource="{Binding TimerDurations}" VerticalAlignment="Center" IsEnabled="{Binding IsTimerStarted, Converter={converters:BooleanInverser}}"
+        <ComboBox ItemsSource="{Binding TimerDurations}" VerticalAlignment="Center" IsEnabled="{Binding CountdownTimer.IsRunning, Converter={converters:BooleanInverser}}"
                   SelectedItem="{Binding SelectedTimerDuration}">
           <ComboBox.ItemTemplate>
             <DataTemplate>
