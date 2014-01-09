@@ -80,6 +80,7 @@
     <Compile Include="Converters\BooleanInverser.cs" />
     <Compile Include="Converters\TimeSpanHumanizer.cs" />
     <Compile Include="Models\CountdownTimer.cs" />
+    <Compile Include="Models\PowerState.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="MainWindow.xaml">

@@ -8,24 +8,22 @@
 // <project>Hibernator</project>
 // ----------------------------------------------------------------------------
 
-
 namespace Hibernator.ViewModel
 {
 
   using System;
+  using System.Diagnostics;
   using System.Collections.ObjectModel;
   using System.Windows.Forms;
   using System.Windows.Input;
   using GalaSoft.MvvmLight;
   using GalaSoft.MvvmLight.Command;
   using Models;
+  using PowerState = Models.PowerState;
 
   public class MainViewModel : ViewModelBase
   {
 
-    /// <summary>
-    /// Initializes a new instance of the MainViewModel class.
-    /// </summary>
     public MainViewModel()
     {
       TimerDurations = new ObservableCollection<TimeSpan>();
@@ -42,8 +40,9 @@ namespace Hibernator.ViewModel
       TimerDurations.Add(new TimeSpan(12, 0, 0));
       SelectedTimerDuration = TimerDurations[3];
       PowerStates = new ObservableCollection<PowerState>();
-      PowerStates.Add(PowerState.Hibernate);
       PowerStates.Add(PowerState.Suspend);
+      PowerStates.Add(PowerState.Hibernate);
+      PowerStates.Add(PowerState.Shutdown);
       SelectedPowerState = PowerState.Hibernate;
     }
 
@@ -137,7 +136,14 @@ namespace Hibernator.ViewModel
       IsHibernating = true;
       _StartCommand.RaiseCanExecuteChanged();
       _StopCommand.RaiseCanExecuteChanged();
-      Application.SetSuspendState(SelectedPowerState, true, true);
+      if (SelectedPowerState != PowerState.Shutdown)
+      {
+        Application.SetSuspendState((System.Windows.Forms.PowerState) SelectedPowerState, true, true);
+      }
+      else
+      {
+        Process.Start("shutdown", "/s /t 5");
+      }
     }
 
     private RelayCommand _StopCommand;
@@ -155,6 +161,7 @@ namespace Hibernator.ViewModel
     private void Stop()
     {
       CountdownTimer.Stop();
+      CountdownTimer = null;
     }
 
     #endregion
