@@ -34,6 +34,7 @@ namespace Hibernator.ViewModel
       TimerDurations.Add(new TimeSpan(0, 30, 0));
       TimerDurations.Add(new TimeSpan(0, 45, 0));
       TimerDurations.Add(new TimeSpan(1, 0, 0));
+      TimerDurations.Add(new TimeSpan(1, 30, 0));
       TimerDurations.Add(new TimeSpan(2, 0, 0));
       TimerDurations.Add(new TimeSpan(3, 0, 0));
       TimerDurations.Add(new TimeSpan(6, 0, 0));

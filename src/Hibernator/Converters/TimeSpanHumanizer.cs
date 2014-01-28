@@ -25,7 +25,7 @@
       {
         var timeSpan = (TimeSpan) value;
 
-        return timeSpan.Humanize();
+        return timeSpan.Humanize(2);
       }
 
       return "???";
