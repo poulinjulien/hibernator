@@ -11,6 +11,7 @@
 namespace Hibernator
 {
 
+  using System;
   using System.Windows;
   using System.Windows.Input;
   using GalaSoft.MvvmLight.Command;
@@ -36,6 +37,13 @@ namespace Hibernator
     private void RestoreWindow()
     {
       WindowState = WindowState.Normal;
+    }
+
+    protected override void OnStateChanged(EventArgs e)
+    {
+      base.OnStateChanged(e);
+
+      ShowInTaskbar = WindowState == WindowState.Normal;
     }
 
   }
