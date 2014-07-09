@@ -37,6 +37,7 @@ namespace Hibernator.ViewModel
       TimerDurations.Add(new TimeSpan(1, 30, 0));
       TimerDurations.Add(new TimeSpan(2, 0, 0));
       TimerDurations.Add(new TimeSpan(3, 0, 0));
+      TimerDurations.Add(new TimeSpan(4, 30, 0));
       TimerDurations.Add(new TimeSpan(6, 0, 0));
       TimerDurations.Add(new TimeSpan(12, 0, 0));
       SelectedTimerDuration = TimerDurations[3];

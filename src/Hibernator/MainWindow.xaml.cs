@@ -15,6 +15,7 @@ namespace Hibernator
   using System.Windows;
   using System.Windows.Input;
   using GalaSoft.MvvmLight.Command;
+  using Microsoft.Win32;
 
   /// <summary>
   /// Interaction logic for MainWindow.xaml
@@ -27,6 +28,15 @@ namespace Hibernator
     public MainWindow()
     {
       InitializeComponent();
+      SystemEvents.PowerModeChanged +=SystemEvents_PowerModeChanged;
+    }
+
+    private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+    {
+      if(e.Mode == PowerModes.Resume)
+      {
+        UpdateLayout();
+      }
     }
 
     public ICommand RestoreWindowCommand
