@@ -1,14 +1,3 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="AutoGrayableImage.cs" company="Transurb Technirail">
-//   Copyright © Transurb Technirail.  All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
-// <author>Julien Poulin</author>
-// <date>06/05/2011</date>
-// <project>RealRailRoad.Core</project>
-// <web>http://www.transurb.com</web>
-//-----------------------------------------------------------------------
-
 namespace Hibernator.Controls
 {
 
